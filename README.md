@@ -1,7 +1,7 @@
 ## Writeup
 
 ---
-**Vehicle Detection Project**
+** Vehicle Detection Project**
 
 The goals / steps of this project are the following:
 
@@ -103,7 +103,13 @@ Here's a [link to my video result](./project_video_output.mp4)
 
 #### 2. Describe how (and identify where in your code) you implemented some kind of filter for false positives and some method for combining overlapping bounding boxes.
 
-I recorded the positions of positive detections in each frame of the video.  From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions.  I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap.  I then assumed each blob corresponded to a vehicle.  I constructed bounding boxes to cover the area of each blob detected.  
+I recorded the positions of positive detections in each frame of the video.  From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions.  
+
+To avoid false negative detection, meaning it has be ensured that a visible car is also detected, the window size is varied between scale=1.5, scale=2.0 and scale=2.5 and appropriately the start/stop values for the search area in y and the overlap ratio has been increased for the video.
+
+To avoid false positives that are present only for 1-2 frames a method has been implemented, that uses multi-frame accumulated heatmap: the heatmap of the last 5 frames is stored and the  thresholding and labelling is done on the average of these heatmaps. To store the heatmaps I am using collections.deque. This techniqe provides stable bounding boxes as well. 
+
+I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap.  I then assumed each blob corresponded to a vehicle.  I constructed bounding boxes to cover the area of each blob detected.  
 
 Here's an example result showing the heatmap from a series of frames of video, the result of `scipy.ndimage.measurements.label()` and the bounding boxes then overlaid on the last frame of video:
 
@@ -122,9 +128,9 @@ Here's an example result showing the heatmap from a series of frames of video, t
 
 ---
 
-### Discussion
+###Discussion
 
-#### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
+####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
 The developed pipeline may possibly fail in varied lighting and illumination conditions. Also, the multi-window search may be optimized further for better speed and accuracy.
 
